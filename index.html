@@ -6,7 +6,7 @@
   <title>Cəmalə üçün Xüsusi Sayt</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root{--accent:#F7768E}
+    :root { --accent: #F7768E }
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -14,114 +14,66 @@
       overflow-x: hidden;
     }
     .overlay {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(5px);
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(5px);
       z-index: 10;
     }
-    h1 {
-      color: white;
-      font-size: 2rem;
-      margin-bottom: 20px;
-      text-align:center;
-    }
-    .buttons {
-      display: flex;
-      gap: 20px;
-    }
+    h1 { color: white; font-size: 2rem; margin-bottom: 20px; text-align: center; }
+    .buttons { display: flex; gap: 20px; }
     .btn {
-      padding: 12px 28px;
-      border: none;
-      border-radius: 25px;
-      font-weight: bold;
-      cursor: pointer;
+      padding: 12px 28px; border: none; border-radius: 25px; font-weight: bold; cursor: pointer;
       transition: transform 0.3s ease;
     }
-    .yes {
-      background: linear-gradient(45deg, #ff758c, #ff7eb3);
-      color: white;
-      transform: scale(1);
-    }
-    .no {
-      background: white;
-      color: #ff758c;
-    }
+    .yes { background: linear-gradient(45deg, #ff758c, #ff7eb3); color: white; }
+    .no { background: white; color: #ff758c; }
     .main {
-      opacity: 0;
-      transition: opacity 0.6s ease;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap:12px;
-      padding: 20px;
+      opacity: 0; transition: opacity 0.6s ease;
+      min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 12px; padding: 20px;
     }
-    .main.show {
-      opacity: 1;
-    }
+    .main.show { opacity: 1; }
     .gallery {
-      display: flex;
-      gap: 20px;
-      overflow-x: auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px; max-width: 90vw; margin: 0 auto;
     }
     .gallery img {
-      width: 300px;
-      height: 300px;
-      border-radius: 20px;
-      object-fit: cover;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      width: 100%; height: 250px; border-radius: 16px; object-fit: cover;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3); cursor: pointer;
       transition: transform 0.5s ease, box-shadow 0.5s ease;
-      cursor: pointer;
     }
     .gallery img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+      transform: scale(1.05); box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     }
     .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      display: flex; justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
-    .lightbox.show {
-      opacity: 1;
-      pointer-events: auto;
+    .lightbox.show { opacity: 1; pointer-events: auto; }
+    .lightbox img { max-width: 90%; max-height: 90%; border-radius: 20px; }
+    .typing-badge {
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      background: rgba(255,255,255,0.06); backdrop-filter: blur(6px);
+      padding: 8px 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     }
-    .lightbox img {
-      max-width: 90%;
-      max-height: 90%;
-      border-radius: 20px;
+    .typing-text {
+      font-family: 'Fira Code', monospace; font-weight: 600; font-size: 28px; color: var(--accent);
+      letter-spacing: 0.6px; white-space: nowrap; overflow: hidden; text-align: center;
     }
-    .typing-badge{
-      display:flex;align-items:center;justify-content:center;gap:16px;
-      background:rgba(255,255,255,0.06);backdrop-filter:blur(6px);
-      padding:8px 18px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);
+    .cursor {
+      width: 4px; height: 34px; background: var(--accent);
+      display: inline-block; margin-left: 8px; opacity: 1;
+      animation: blink 1s steps(2, start) infinite;
     }
-    .typing-text{
-      font-family: 'Fira Code', monospace; font-weight:600; font-size:28px; color:var(--accent);
-      letter-spacing:0.6px;white-space:nowrap; overflow:hidden; max-width:1000px; text-align:center;
-    }
-    .cursor{ width:4px;height:34px;background:var(--accent);display:inline-block;margin-left:8px;opacity:1;animation:blink 1s steps(2, start) infinite}
-    @keyframes blink{50%{opacity:0}}
+    @keyframes blink { 50% { opacity: 0 } }
     .poem {
-      margin-top: 20px;
-      color: white;
-      max-width: 600px;
-      font-size: 16px;
-      line-height: 1.6;
-      white-space: pre-line;
-      text-align: center;
+      margin-top: 20px; color: white; max-width: 600px; font-size: 16px; line-height: 1.6; white-space: pre-line; text-align: center;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.5rem; }
+      .typing-text { font-size: 20px; }
+      .gallery img { height: 180px; }
     }
   </style>
 </head>
@@ -191,36 +143,43 @@ Sonra… Sonra yenə biz ayrılmayaq…
   let scale = 1;
   noBtn.addEventListener('click', () => {
     scale += 0.18;
-    if(scale>3.6) scale = 3.6;
+    if (scale > 3.6) scale = 3.6;
     yesBtn.style.transform = `scale(${scale})`;
   });
   yesBtn.addEventListener('click', () => {
-    setTimeout(()=>{overlay.style.display='none';main.classList.add('show');startTypingLoop();},420);
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      main.classList.add('show');
+      startTypingLoop();
+    }, 420);
   });
 
-  function startTypingLoop(){
+  function startTypingLoop() {
     const phrases = ['Səni çox ama çox sevirəm'];
     const typeSpeed = 45;
     const pauseAfter = 1200;
     let pIndex = 0;
-    async function run(){
+    async function run() {
       const text = phrases[pIndex];
-      for(let i=1;i<=text.length;i++){
-        typingText.textContent = text.substring(0,i);
+      for (let i = 1; i <= text.length; i++) {
+        typingText.textContent = text.substring(0, i);
         await wait(typeSpeed);
       }
       await wait(pauseAfter);
-      for(let i=text.length;i>=0;i--){
-        typingText.textContent = text.substring(0,i);
+      for (let i = text.length; i >= 0; i--) {
+        typingText.textContent = text.substring(0, i);
         await wait(26);
       }
       await wait(400);
-      pIndex = (pIndex+1) % phrases.length;
+      pIndex = (pIndex + 1) % phrases.length;
       run();
     }
     run();
   }
-  function wait(ms){return new Promise(res=>setTimeout(res,ms))}
+
+  function wait(ms) {
+    return new Promise(res => setTimeout(res, ms));
+  }
 </script>
 </body>
 </html>
