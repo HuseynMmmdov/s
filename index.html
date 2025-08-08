@@ -4,13 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Cəmalə üçün Xüsusi Sayt</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root{--accent:#F7768E}
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #ffdde1, #ee9ca7);
-      overflow: hidden;
+      overflow-x: hidden;
     }
     .overlay {
       position: fixed;
@@ -27,6 +28,7 @@
       color: white;
       font-size: 2rem;
       margin-bottom: 20px;
+      text-align:center;
     }
     .buttons {
       display: flex;
@@ -52,11 +54,13 @@
     .main {
       opacity: 0;
       transition: opacity 0.6s ease;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      gap:12px;
+      padding: 20px;
     }
     .main.show {
       opacity: 1;
@@ -83,19 +87,35 @@
       font-size: 20px;
       animation: hearts 4s linear infinite;
     }
-    .typing {
+    .typing-badge{
+      display:flex;align-items:center;justify-content:center;gap:16px;
+      background:rgba(255,255,255,0.06);backdrop-filter:blur(6px);
+      padding:8px 18px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.12);
+    }
+    .typing-text{
+      font-family: 'Fira Code', monospace; font-weight:600; font-size:28px; color:var(--accent);
+      letter-spacing:0.6px;white-space:nowrap; overflow:hidden; max-width:1000px; text-align:center;
+    }
+    .cursor{ width:4px;height:34px;background:var(--accent);display:inline-block;margin-left:8px;opacity:1;animation:blink 1s steps(2, start) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .poem {
+      margin-top: 20px;
       color: white;
-      font-size: 1.2rem;
-      margin-top: 10px;
-      min-height: 1.5rem;
-      border-right: 2px solid white;
-      white-space: nowrap;
-      overflow: hidden;
+      max-width: 600px;
+      font-size: 16px;
+      line-height: 1.6;
+      white-space: pre-line;
+      text-align: center;
+    }
+    @media (max-width:640px){
+      .typing-text{font-size:18px}
+      .cursor{height:22px}
+      .photo{width:220px;height:220px}
+      .poem{font-size:14px}
     }
   </style>
 </head>
 <body>
-
 <div class="overlay" id="overlay">
   <h1>Hüseyni sevirsən?</h1>
   <div class="buttons">
@@ -103,66 +123,100 @@
     <button class="btn yes" id="yesBtn">Bəli</button>
   </div>
 </div>
-
 <div class="main" id="main">
   <h1 style="color:white;">Cəmalə ❤️</h1>
-  <div class="typing" id="typing"></div>
+  <div class="typing-badge" id="badge" aria-hidden="true">
+    <div style="font-size:20px;">✶</div>
+    <div class="typing-text" id="typingText"></div>
+    <div class="cursor" id="cursor"></div>
+  </div>
   <img src="photo.jpg" class="photo" alt="Cəmalə">
-</div>
+  <div class="poem">
+Xəyalın yanımda, sən uzaqdasan,
+Hicranın yolları ömür qədərdir.
+Bu yalqız axşamda yuvama baxsan,
+Mənəm, xəyalındır, bir də kədərdir.
 
+Gəl ört pəncərəni, qalaq üz-üzə
+Bir sən ol, bir də mən, bir də gözlərin
+Vüsal qərq olurkən hicran dənizə,
+Ağ bir yelkən olsun o son sözlərin.
+
+Bir sən ol, bir də mən, bir də dərdimiz
+Ağlayaq doyunca gülək doyunca,
+Baş-başa qaldıqca bu möhnətdə biz,
+Döysün qapıları külək doyunca
+
+Döysün, qoy açmayaq yorulsun külək,
+Qəmli hicran qalsın qapıda dustaq.
+Bir az vüsalınla çırpınsın ürək,
+Sonra… Sonra yenə biz ayrılmayaq…
+  </div>
+</div>
 <script>
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
   const overlay = document.getElementById('overlay');
   const main = document.getElementById('main');
-  const typingEl = document.getElementById('typing');
+  const typingText = document.getElementById('typingText');
   let scale = 1;
 
   noBtn.addEventListener('click', () => {
-    scale += 0.2;
+    scale += 0.18;
+    if(scale>3.6) scale = 3.6;
     yesBtn.style.transform = `scale(${scale})`;
+    noBtn.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.2,.9,.2,1)'});
   });
 
   yesBtn.addEventListener('click', () => {
-    overlay.style.display = 'none';
-    main.classList.add('show');
-    createHearts();
-    startTyping();
+    setTimeout(()=>{overlay.style.display='none';main.classList.add('show');startEffects();},420);
   });
 
-  function createHearts() {
+  function startEffects(){
+    startHearts();
+    startTypingLoop();
+  }
+  function startHearts() {
     setInterval(() => {
       const heart = document.createElement('div');
       heart.classList.add('heart');
       heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.top = (70 + Math.random()*25) + 'vh';
+      heart.style.fontSize = (12 + Math.random()*28) + 'px';
       heart.style.animationDuration = 2 + Math.random() * 3 + 's';
       heart.innerHTML = '❤';
       document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 5000);
-    }, 300);
+      setTimeout(() => heart.remove(), 5500);
+    }, 360);
   }
-
-  function startTyping() {
-    const text = 'Səni çox ama çox sevirəm';
-    let i = 0;
-    let forward = true;
-    setInterval(() => {
-      typingEl.textContent = text.substring(0, i);
-      if (forward) {
-        i++;
-        if (i > text.length) {
-          forward = false;
-          setTimeout(() => {}, 1000);
-        }
-      } else {
-        i--;
-        if (i < 0) {
-          forward = true;
-        }
+  function startTypingLoop(){
+    const phrases = ['Səni çox ama çox sevirəm'];
+    const typeSpeed = 45;
+    const pauseAfter = 1200;
+    let pIndex = 0;
+    async function run(){
+      const text = phrases[pIndex];
+      for(let i=1;i<=text.length;i++){
+        typingText.textContent = text.substring(0,i);
+        await wait(typeSpeed);
       }
-    }, 150);
+      await wait(pauseAfter);
+      for(let i=text.length;i>=0;i--){
+        typingText.textContent = text.substring(0,i);
+        await wait(26);
+      }
+      await wait(400);
+      pIndex = (pIndex+1) % phrases.length;
+      run();
+    }
+    run();
+  }
+  function wait(ms){return new Promise(res=>setTimeout(res,ms))}
+  const url = new URL(location.href);
+  if(url.searchParams.get('auto') === 'yes'){
+    setTimeout(()=>yesBtn.click(),700);
   }
 </script>
-
 </body>
 </html>
+
