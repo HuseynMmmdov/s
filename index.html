@@ -65,27 +65,43 @@
     .main.show {
       opacity: 1;
     }
-    .photo {
+    .gallery {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+    }
+    .gallery img {
       width: 300px;
       height: 300px;
       border-radius: 20px;
       object-fit: cover;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
       transition: transform 0.5s ease, box-shadow 0.5s ease;
+      cursor: pointer;
     }
-    .photo:hover {
+    .gallery img:hover {
       transform: scale(1.05);
       box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     }
-    @keyframes hearts {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-500px) scale(1.5); opacity: 0; }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    .heart {
-      position: absolute;
-      color: #ff6f91;
-      font-size: 20px;
-      animation: hearts 4s linear infinite;
+    .lightbox.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 20px;
     }
     .typing-badge{
       display:flex;align-items:center;justify-content:center;gap:16px;
@@ -107,12 +123,6 @@
       white-space: pre-line;
       text-align: center;
     }
-    @media (max-width:640px){
-      .typing-text{font-size:18px}
-      .cursor{height:22px}
-      .photo{width:220px;height:220px}
-      .poem{font-size:14px}
-    }
   </style>
 </head>
 <body>
@@ -125,12 +135,15 @@
 </div>
 <div class="main" id="main">
   <h1 style="color:white;">Cəmalə ❤️</h1>
-  <div class="typing-badge" id="badge" aria-hidden="true">
+  <div class="typing-badge" id="badge">
     <div style="font-size:20px;">✶</div>
     <div class="typing-text" id="typingText"></div>
-    <div class="cursor" id="cursor"></div>
+    <div class="cursor"></div>
   </div>
-  <img src="photo.jpg" class="photo" alt="Cəmalə">
+  <div class="gallery">
+    <img src="photo1.jpg" alt="Foto 1">
+    <img src="photo2.jpg" alt="Foto 2">
+  </div>
   <div class="poem">
 Xəyalın yanımda, sən uzaqdasan,
 Hicranın yolları ömür qədərdir.
@@ -153,42 +166,38 @@ Bir az vüsalınla çırpınsın ürək,
 Sonra… Sonra yenə biz ayrılmayaq…
   </div>
 </div>
+<div class="lightbox" id="lightbox">
+  <img src="" alt="Böyük şəkil">
+</div>
 <script>
   const noBtn = document.getElementById('noBtn');
   const yesBtn = document.getElementById('yesBtn');
   const overlay = document.getElementById('overlay');
   const main = document.getElementById('main');
   const typingText = document.getElementById('typingText');
-  let scale = 1;
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = lightbox.querySelector('img');
 
+  document.querySelectorAll('.gallery img').forEach(img => {
+    img.addEventListener('click', () => {
+      lightboxImg.src = img.src;
+      lightbox.classList.add('show');
+    });
+  });
+  lightbox.addEventListener('click', () => {
+    lightbox.classList.remove('show');
+  });
+
+  let scale = 1;
   noBtn.addEventListener('click', () => {
     scale += 0.18;
     if(scale>3.6) scale = 3.6;
     yesBtn.style.transform = `scale(${scale})`;
-    noBtn.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.2,.9,.2,1)'});
   });
-
   yesBtn.addEventListener('click', () => {
-    setTimeout(()=>{overlay.style.display='none';main.classList.add('show');startEffects();},420);
+    setTimeout(()=>{overlay.style.display='none';main.classList.add('show');startTypingLoop();},420);
   });
 
-  function startEffects(){
-    startHearts();
-    startTypingLoop();
-  }
-  function startHearts() {
-    setInterval(() => {
-      const heart = document.createElement('div');
-      heart.classList.add('heart');
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.top = (70 + Math.random()*25) + 'vh';
-      heart.style.fontSize = (12 + Math.random()*28) + 'px';
-      heart.style.animationDuration = 2 + Math.random() * 3 + 's';
-      heart.innerHTML = '❤';
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), 5500);
-    }, 360);
-  }
   function startTypingLoop(){
     const phrases = ['Səni çox ama çox sevirəm'];
     const typeSpeed = 45;
@@ -212,11 +221,6 @@ Sonra… Sonra yenə biz ayrılmayaq…
     run();
   }
   function wait(ms){return new Promise(res=>setTimeout(res,ms))}
-  const url = new URL(location.href);
-  if(url.searchParams.get('auto') === 'yes'){
-    setTimeout(()=>yesBtn.click(),700);
-  }
 </script>
 </body>
 </html>
-
