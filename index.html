@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="az">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cəmalə üçün Xüsusi Sayt</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#fff5f8;
+      --bg2:#fff0f3;
+      --accent:#ff6b9a;
+      --accent-2:#ffb3c7;
+      --muted:#6b6b6b;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:#222;overflow:hidden;
+    }
+
+    /* --- Overlay with question --- */
+    .overlay{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,rgba(0,0,0,0.25),rgba(0,0,0,0.15));backdrop-filter:blur(4px);
+      z-index:40;padding:20px;
+    }
+    .card{
+      width:min(720px,96%);max-width:980px;background:rgba(255,255,255,0.95);border-radius:22px;padding:30px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.12);text-align:center;position:relative;overflow:hidden;
+      transform-origin:center;transition:transform .4s ease;
+    }
+    h1{margin:0 0 10px;font-size:28px;color:#333}
+    p.lead{margin:0 0 20px;color:var(--muted)}
+
+    .buttons{display:flex;gap:18px;justify-content:center;align-items:center}
+    button.btn{
+      border:0;padding:12px 28px;border-radius:999px;font-weight:700;cursor:pointer;outline:none;
+      box-shadow:0 6px 18px rgba(0,0,0,0.08);transform-origin:center;transition:transform .15s ease,box-shadow .15s ease;
+    }
+    .btn.no{background:transparent;border:2px solid rgba(0,0,0,0.06);color:#444}
+    .btn.yes{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:white}
+
+    .hint{margin-top:14px;color:#777;font-size:13px}
+
+    /* --- Main content after reveal --- */
+    .main{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;padding:30px;opacity:0;pointer-events:none;transition:opacity .6s ease;
+    }
+    .main.show{opacity:1;pointer-events:auto}
+    .content{
+      width:min(1100px,96%);max-width:1200px;background:linear-gradient(180deg,rgba(255,255,255,0.7),rgba(255,255,255,0.6));
+      border-radius:20px;padding:40px;display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;box-shadow:0 10px 60px rgba(0,0,0,0.08);
+    }
+    .panel{
+      padding:12px 8px;
+    }
+    .headline{font-size:30px;margin:0 0 10px}
+    .sub{color:var(--muted);margin-bottom:18px}
+    .story{line-height:1.6;color:#333}
+
+    /* Photo card */
+    .photo-wrap{background:linear-gradient(180deg,rgba(255,255,255,0.9),rgba(255,255,255,0.8));border-radius:16px;padding:14px;text-align:center;position:relative;overflow:hidden}
+    .photo{
+      width:100%;height:360px;border-radius:12px;object-fit:cover;display:block;transition:transform .6s cubic-bezier(.2,.9,.2,1),box-shadow .4s ease;
+      box-shadow:0 12px 40px rgba(0,0,0,0.12);
+    }
+    .photo-wrap:hover .photo{transform:scale(1.04)}
+
+    .caption{margin-top:12px;font-weight:600;color:#444}
+
+    /* Floating hearts */
+    .hearts{position:absolute;inset:0;pointer-events:none;z-index:2}
+    .heart{position:absolute;width:18px;height:18px;transform:translate(-50%,-50%) rotate(-45deg);opacity:0;}
+    .heart:before,.heart:after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:var(--accent);}
+    .heart:before{top:-9px;left:0}
+    .heart:after{left:9px;top:0}
+
+    /* heart animation will be driven by JS by setting style.top and left and animating */
+
+    /* small responsive tweaks */
+    @media (max-width:880px){
+      .content{grid-template-columns:1fr;}
+      .photo{height:300px}
+    }
+
+    /* tiny spring animation for yes button growth */
+    .btn.yes.grow{animation:grow .38s cubic-bezier(.2,.9,.2,1) forwards}
+    @keyframes grow{0%{transform:scale(1)}50%{transform:scale(1.28)}100%{transform:scale(1.15)}}
+
+    /* fade out overlay */
+    .overlay.fadeout{animation:overlayOut .6s ease forwards}
+    @keyframes overlayOut{to{opacity:0;transform:translateY(-8px);visibility:hidden}}
+
+  </style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay">
+    <div class="card" id="card">
+      <h1>Hüseyni sevirsən?</h1>
+      <p class="lead">Cəmalə üçün kiçik bir sürpriz hazırlamışam — doğru cavabı seç :)</p>
+
+      <div class="buttons">
+        <button class="btn no" id="noBtn">Yox</button>
+        <button class="btn yes" id="yesBtn">Bəli</button>
+      </div>
+      <p class="hint">(Yox düyməsinə basdıqca Bəli düyməsi böyüyəcək... sına!)</p>
+    </div>
+  </div>
+
+  <div class="main" id="main">
+    <div class="content">
+      <div class="panel">
+        <h2 class="headline">Cəmalə, sən mənim üçün təkcə gözəlsən</h2>
+        <p class="sub">Hər anın sənə həsr edilmişdir — bu kiçik sayt düz sənə görə.</p>
+        <div class="story">
+          <p>Burada sənə aid xatirələr, gülüşlər və kiçik sürprizlər olacaq. Fotoya klik edərək daha çox baxa bilərsən. Üstəlik, arxa planda kiçik ürəklər uçacaq — sənə hər ötən saniyədə daha çox heyranam.</p>
+        </div>
+      </div>
+
+      <div class="photo-wrap">
+        <!-- Dəyişmək istədiyiniz fotoyu "photo.jpg" ilə əvəz edin -->
+        <img id="photo" class="photo" src="photo.jpg" alt="Cəmalə" />
+        <div class="caption">Sənin üçün — ən gözəl anlar</div>
+      </div>
+
+      <div class="hearts" id="hearts"></div>
+    </div>
+  </div>
+
+  <script>
+    // Elementlər
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const overlay = document.getElementById('overlay');
+    const main = document.getElementById('main');
+    const hearts = document.getElementById('hearts');
+
+    // Əsas məntiq: "Yox" düyməsinə basdıqca "Bəli" böyüsün
+    let growScale = 1; // başlanğıc
+    function growYes(){
+      growScale += 0.18; // hər basışda böyüt
+      // limit qoy: çox çox böyük olmasın
+      if (growScale > 3.8) growScale = 3.8;
+      yesBtn.style.transform = `scale(${growScale})`;
+      // əlavə kiçik animasiya sinifi
+      yesBtn.classList.remove('grow');
+      void yesBtn.offsetWidth; // restart animation
+      yesBtn.classList.add('grow');
+    }
+
+    noBtn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      growYes();
+      // kiçik vizual feedback üçün no düyməsinə qısa translate əlavə edək
+      noBtn.animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:280,easing:'cubic-bezier(.2,.9,.2,1)'});
+    });
+
+    // İstifadəçi Yes düyməsinə basanda əsas məzmun açılsın
+    yesBtn.addEventListener('click', ()=>{
+      // overlay-i yumşaq şəkildə bağla
+      overlay.classList.add('fadeout');
+      setTimeout(()=>{overlay.style.display='none';main.classList.add('show');startHearts();},620);
+    });
+
+    // Touch üçün də işləsin
+    noBtn.addEventListener('touchstart',()=>growYes());
+
+    // Random ürək yaradıcısı
+    function createHeart(xPercent){
+      const h = document.createElement('div');
+      h.className = 'heart';
+      // rənglər dəyişə bilər
+      h.style.background = 'transparent';
+      h.style.left = (xPercent || (20 + Math.random()*60)) + '%';
+      h.style.top = '100%';
+      hearts.appendChild(h);
+
+      // Random ölçü və delay
+      const size = 12 + Math.random()*26;
+      h.style.width = size + 'px';
+      h.style.height = size + 'px';
+      h.style.opacity = 0.95;
+      h.style.transform = 'translate(-50%,-50%) rotate(-45deg)';
+      h.style.setProperty('--s', size + 'px');
+
+      // animate via Web Animations
+      const rise = hearts.animate([
+        { transform: `translateY(0) scale(0.9)`, opacity:1 },
+        { transform: `translateY(-80vh) scale(1.05)`, opacity:0.2 }
+      ],{
+        duration: 2800 + Math.random()*2200,
+        easing: 'cubic-bezier(.2,.9,.2,1)'
+      });
+
+      // Also move horizontally a bit
+      const driftX = (Math.random()*60 - 30);
+      h.animate([
+        { left: h.style.left },
+        { left: `calc(${h.style.left} + ${driftX}px)` }
+      ],{duration: rise.effect.getTiming().duration, fill:'forwards'});
+
+      rise.onfinish = ()=>{h.remove()}
+    }
+
+    let heartsInterval = null;
+    function startHearts(){
+      // yarat ilk dalğanı
+      for(let i=0;i<6;i++) setTimeout(()=>createHeart(30 + i*6), i*160);
+      heartsInterval = setInterval(()=>{
+        // bəzən random 1-3 ürək
+        const count = 1 + Math.floor(Math.random()*3);
+        for(let i=0;i<count;i++) setTimeout(()=>createHeart(), i*140);
+      }, 900);
+    }
+
+    // Foto hover üçün əlavə parıltı effekti (JS ilə yox, CSS transform ilə)
+
+    // İstəyə bağlı: istifadəçi "photo.jpg" faylını dəyişsin
+    // Əlavə: klik ediləndə bir sadə lightbox effekti
+    const photo = document.getElementById('photo');
+    photo.addEventListener('click', ()=>{
+      openLightbox(photo.src);
+    });
+
+    function openLightbox(src){
+      // lightbox yaradılıb göstərilsin
+      const lb = document.createElement('div');
+      lb.style.position='fixed';lb.style.inset=0;lb.style.background='rgba(0,0,0,0.75)';lb.style.display='flex';lb.style.alignItems='center';lb.style.justifyContent='center';lb.style.zIndex=9999;lb.style.cursor='zoom-out';
+      const img = document.createElement('img');img.src=src;img.style.maxWidth='92%';img.style.maxHeight='92%';img.style.borderRadius='12px';img.style.boxShadow='0 20px 60px rgba(0,0,0,0.6)';
+      lb.appendChild(img);
+      lb.addEventListener('click',()=>{lb.remove()});
+      document.body.appendChild(lb);
+    }
+
+    // Accessibility: klaviatura ilə Bəli üçün Enter də işləsin
+    yesBtn.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') yesBtn.click(); });
+    noBtn.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') noBtn.click(); });
+
+    // Səhifə tam yükləndikdə kiçik giriş animasiyası
+    window.addEventListener('load', ()=>{
+      const c = document.getElementById('card');
+      c.animate([{transform:'translateY(8px) scale(.98)',opacity:0},{transform:'translateY(0) scale(1)',opacity:1}],{duration:520,easing:'cubic-bezier(.2,.9,.2,1)'});
+    });
+
+    // İstəyə görə: URL parametri ?auto=yes ilə avtomatik olaraq "Bəli" düyməsini basmaq olar
+    const url = new URL(location.href);
+    if(url.searchParams.get('auto') === 'yes'){
+      setTimeout(()=>yesBtn.click(),700);
+    }
+
+  </script>
+</body>
+</html>
